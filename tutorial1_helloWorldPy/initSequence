@@ -1,0 +1,2 @@
+screen -dmS "coreSession" roscore
+screen -dmS "publisherSession" ./helloWorldPublisher.py
