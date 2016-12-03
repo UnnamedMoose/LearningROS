@@ -1,4 +1,19 @@
 #!/usr/bin/python2
+"""Make and run a ROS node that reads the logic state of a pin and publishes it.
+
+Create a ``buttonPublisherNode`` ROS node that will subscribe to ``LEDCtrlTopic``.
+Messages in this topic are of type ``std_msgs.msg.Bool``.
+
+The node exectues in a while loop at a fixed refresh rate, i.e. it stays active
+until it's stopped.
+
+.. py:module:: buttonPublisherNode
+   :platform: Linux
+   :synopsis: Create a buttonPublisherNode.
+.. moduleauthor:: Artur Lidtke
+
+"""
+
 from __future__ import print_function
 import rospy
 import std_msgs.msg
@@ -22,8 +37,8 @@ def makeButtonPublisher():
     pin connected to a button.
     """
 
-    # initialise this node
-    rospy.init_node('buttonPublisherNode')
+    # initialise this node, enabling debug mode
+    rospy.init_node('buttonPublisherNode', log_level=rospy.DEBUG)
     # create a publisher object subscribed to the LED control topic
     # this will publish boolean values depending on the state of the switch
     buttonPub = rospy.Publisher('LEDCtrlTopic', std_msgs.msg.Bool, queue_size=10)
@@ -51,7 +66,8 @@ def makeButtonPublisher():
 
         # construct and publish a log entry to post in the main log topic
         logMsg = "Input pin state time {} s = {}".format(rospy.get_time(), pinState)
-        rospy.loginfo(logMsg)
+        # rospy.loginfo(logMsg) # this would publish every cycle
+        rospy.loginfo_throttle(int(10/REFRESH_RATE), logMst) # this will send the message every 10/rate seconds
 
         # wait for the next function
         rate.sleep()

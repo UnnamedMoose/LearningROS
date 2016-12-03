@@ -30,12 +30,14 @@ def LEDCallback(msg):
 		* msg (bool): used to decide what to do with the LED.
 
 	Raises:
-		* TypeError when ``msg`` is not std_msgs.msg.Bool.
+		* TypeError when ``msg`` is not ``type<bool>``.
 
 	"""
-	rospy.loginfo(rospy.get_caller_id() + "LEDListener heard {} of type {}.".format(
+	rospy.logdebug(rospy.get_caller_id()+" LEDListener heard {} of type {}.".format(
 		msg.data,type(msg.data)))
 	if not type(msg.data) is bool:
+		rospy.logerr(rospy.get_caller_id()+" LEDListener got wronge data type:"
+										   " {}".format(type(msg.data)))
 		raise TypeError("Data type not understood. Type of LED control is "
 						"message {}.".format(type(msg.data)))
 
@@ -44,15 +46,16 @@ def LEDCallback(msg):
 	else:
 		RPiUtils.pinLow(GPIOPINS[PIN])
 
-def makeLEDListener(pin="GPIO21"):
+def makeLEDListener(pin="GPIO21",debug=False):
 	"""Make a ROS node that listens to LED on/off commands.
 
 	Create a ``LEDListenerNode`` ROS node that will listen to ``LEDCtrlTopic``.
 	Messages in this topic of type ``std_msgs.msg.Bool`` will be used to turn
 	the LED on or off.
 
-	Args:
+	Kwargs:
 		* pin (str): Raspberry Pi GPIO pin name, to which the LED is connected.
+		* debug (bool): whether to enable debug output of the LEDListenerNode.
 
 	"""
 	# First start the GPIO, then handle commands.
@@ -61,7 +64,10 @@ def makeLEDListener(pin="GPIO21"):
 	RPiUtils.pinLow(GPIOPINS[pin]) # Start with the LED off.
 
 	# Make the node and subscribe to the correct topic.
-	rospy.init_node('LEDListenerNode')
+	if debug:
+		rospy.init_node('LEDListenerNode',log_level=rospy.DEBUG)
+	else:
+		rospy.init_node('LEDListenerNode')
 	rospy.Subscriber('LEDCtrlTopic',std_msgs.msg.Bool,LEDCallback)
 
 	try: # Keep the listener going until the node is stopped.
