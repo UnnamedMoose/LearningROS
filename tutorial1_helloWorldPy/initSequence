@@ -1,2 +1,4 @@
+# start the core ROS process
 screen -dmS "coreSession" roscore
+# initialise the publisher node in a new session
 screen -dmS "publisherSession" ./helloWorldPublisher.py

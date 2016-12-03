@@ -1,0 +1,5 @@
+# start the core ROS process
+screen -dmS "coreSession" roscore
+# initialise the publisher and listener nodes in a new session each
+screen -dmS "buttonPublisherSession" ./buttonPublisher.py
+screen -dmS "LEDListenerSession" ./LEDListener.py

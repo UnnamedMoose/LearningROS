@@ -14,11 +14,11 @@ def talker():
         hello_str = "hello world at time {} s".format(rospy.get_time())
         rospy.loginfo(hello_str)
         pub.publish(hello_str)
-        
+
         # dump time to log
         with open("logfile","a") as f:
             f.write("{},{}\n".format(t0, datetime.datetime.now()))
-        
+
         rate.sleep()
 
 if __name__ == '__main__':
